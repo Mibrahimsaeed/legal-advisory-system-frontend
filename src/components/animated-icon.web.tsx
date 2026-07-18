@@ -1,108 +1,54 @@
-import { Image } from 'expo-image';
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { Keyframe, Easing } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
-import classes from './animated-icon.module.css';
-const DURATION = 300;
+import AppLogo from '@/components/AppLogo';
+import { ThemedText } from '@/components/themed-text';
+import { Fonts, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
-export function AnimatedSplashOverlay() {
-  return null;
-}
+const HOLD_MS = 1800;
+const FADE_MS = 500;
 
-const keyframe = new Keyframe({
-  0: {
-    transform: [{ scale: 0 }],
-  },
-  60: {
-    transform: [{ scale: 1.2 }],
-    easing: Easing.elastic(1.2),
-  },
-  100: {
-    transform: [{ scale: 1 }],
-    easing: Easing.elastic(1.2),
-  },
-});
+type AnimatedSplashOverlayProps = {
+  onFinish: () => void;
+};
 
-const logoKeyframe = new Keyframe({
-  0: {
-    opacity: 0,
-  },
-  60: {
-    transform: [{ scale: 1.2 }],
-    opacity: 0,
-    easing: Easing.elastic(1.2),
-  },
-  100: {
-    transform: [{ scale: 1 }],
-    opacity: 1,
-    easing: Easing.elastic(1.2),
-  },
-});
+export function AnimatedSplashOverlay({ onFinish }: AnimatedSplashOverlayProps) {
+  const opacity = useSharedValue(1);
+  const theme = useTheme();
 
-const glowKeyframe = new Keyframe({
-  0: {
-    transform: [{ rotateZ: '-180deg' }, { scale: 0.8 }],
-    opacity: 0,
-  },
-  [DURATION / 1000]: {
-    transform: [{ rotateZ: '0deg' }, { scale: 1 }],
-    opacity: 1,
-    easing: Easing.elastic(0.7),
-  },
-  100: {
-    transform: [{ rotateZ: '7200deg' }],
-  },
-});
+  useEffect(() => {
+    opacity.value = withDelay(HOLD_MS, withTiming(0, { duration: FADE_MS, easing: Easing.out(Easing.ease) }));
+    const timeout = setTimeout(onFinish, HOLD_MS + FADE_MS);
+    return () => clearTimeout(timeout);
+  }, []);
 
-export function AnimatedIcon() {
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
   return (
-    <View style={styles.iconContainer}>
-      <Animated.View entering={glowKeyframe.duration(60 * 1000 * 4)} style={styles.glow}>
-        <Image style={styles.glow} source={require('@/assets/images/logo-glow.png')} />
-      </Animated.View>
-
-      <Animated.View style={styles.background} entering={keyframe.duration(DURATION)}>
-        <div className={classes.expoLogoBackground} />
-      </Animated.View>
-
-      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(DURATION)}>
-        <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />
-      </Animated.View>
-    </View>
+    <Animated.View style={[styles.overlay, animatedStyle, { backgroundColor: theme.brandBackground }]}>
+      <AppLogo size={96} />
+      <ThemedText type="subtitle" themeColor="brandText" style={[styles.title, { fontFamily: Fonts?.serif }]}>
+        Legal Advisor AI
+      </ThemedText>
+      <ThemedText type="small" themeColor="brandAccent" style={[styles.tagline, { fontFamily: Fonts?.mono }]}>
+        UNDERSTAND LAW WITH AI
+      </ThemedText>
+      <View style={styles.dotsRow}>
+        <View style={[styles.dot, styles.dotActive, { backgroundColor: theme.brandAccent }]} />
+        <View style={[styles.dot, { backgroundColor: theme.brandTextSecondary }]} />
+        <View style={[styles.dot, { backgroundColor: theme.brandTextSecondary }]} />
+      </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    width: '100%',
-    zIndex: 1000,
-    position: 'absolute',
-    top: 128 / 2 + 138,
-  },
-  imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  glow: {
-    width: 201,
-    height: 201,
-    position: 'absolute',
-  },
-  iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 128,
-    height: 128,
-  },
-  image: {
-    position: 'absolute',
-    width: 76,
-    height: 71,
-  },
-  background: {
-    width: 128,
-    height: 128,
-    position: 'absolute',
-  },
+  overlay: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.five },
+  title: { marginTop: Spacing.four, textAlign: 'center' },
+  tagline: { marginTop: Spacing.two, textAlign: 'center', letterSpacing: 3, textTransform: 'uppercase' },
+  dotsRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, marginTop: Spacing.five },
+  dot: { width: 6, height: 6, borderRadius: 3, opacity: 0.5 },
+  dotActive: { width: 24, opacity: 1 },
 });
