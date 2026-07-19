@@ -1,29 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@theme {
-  /* Core brand colors */
-  --color-primary: #16233F;        /* deep navy — backgrounds, primary buttons/text */
-  --color-primary-dark: #0F1A30;   /* darker navy — pressed states, gradients */
-  --color-primary-light: #24365C;  /* lighter navy — cards on navy bg, borders */
-
-  --color-accent: #C9A667;         /* muted gold — icons, highlights, CTAs */
-  --color-accent-light: #E8C47E;   /* bright gold — active states, emphasis */
-
-  /* Neutral / surface colors */
-  --color-background: #FCF8EE;     /* ivory app background */
-  --color-surface: #FFFFFF;        /* cards, inputs on ivory bg */
-  --color-surface-alt: #F4ECD7;    /* secondary tan surface (tags, chips) */
-
-  /* Text colors */
-  --color-foreground: #16233F;     /* primary text on light backgrounds */
-  --color-foreground-muted: #6B6355; /* secondary/muted text on light bg */
-  --color-on-primary: #FCF8EE;     /* text/icons on navy backgrounds */
-  --color-on-primary-muted: #B9AE93; /* muted text/icons on navy backgrounds */
-
-  /* Utility */
-  --color-border: #E7DFC9;         /* hairline borders on light bg */
-  --color-success: #4C7A5A;
-  --color-error: #B3453B;
+:root {
+  --font-display:
+    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
+    Segoe UI Symbol, Noto Color Emoji;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
 }

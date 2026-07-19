@@ -1,56 +1,44 @@
-# Welcome to your Expo app 👋
+# Legal Advisor AI — Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A premium mobile client for an AI legal assistant, built with [Expo](https://expo.dev) SDK 56, expo-router, and React Native Reanimated 4.
 
-## Get started
+Navy-and-gold "law library" design language: warm ivory light mode, deep navy dark mode, serif display type, and purposeful motion throughout (spring press feedback, staggered list entrances, scroll-driven onboarding, typing indicators).
 
-1. Install dependencies
+## App flow
 
-   ```bash
-   npm install
-   ```
+Splash → Onboarding (3-slide swipeable pager) → Login / Signup → Tabs
 
-2. Start the app
+- **Home** — greeting, global search, "ask a question" CTA, legal topic grid, recent conversations
+- **Chat** (`/chat/[id]`) — message bubbles, typing indicator, growing composer, starter suggestions; mock assistant replies until a backend is wired up
+- **History** — searchable conversation list with layout animations
+- **Search** (`/search`) — live filtering across topics and conversations, "ask the AI instead" fallback
+- **Profile** — appearance (system/light/dark), preference toggles, clear history, sign out
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Getting started
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Open in a development build, Android emulator, iOS simulator, or Expo Go.
 
-### Other setup steps
+## Architecture
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```
+src/
+  app/           expo-router routes (splash, onboarding, auth, (tabs), chat, search)
+  components/    ui/ primitives (Button, TextField, Card, Icon, …) + feature components
+  constants/     theme.ts (colors, type, spacing, radius, shadows) + motion.ts tokens
+  providers/     theme preference + in-memory conversations store
+  hooks/         useTheme, useColorScheme, useMockSubmit
+  data/          legal topics, seeded conversations, mock user
+  utils/         haptics, time formatting
+```
 
-## Learn more
+Design tokens live in `src/constants/theme.ts` and `src/constants/motion.ts`; every screen and component draws from them. Icons use `expo-symbols` (SF Symbols on iOS, Material Symbols on Android/web) through the semantic `Icon` component.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Status
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Frontend only: auth, conversations, and profile are mocked in-memory — no data leaves the device.
+- Every answer surface carries a "general information, not legal advice" disclaimer by design.
