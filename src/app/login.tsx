@@ -9,8 +9,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AuthHero } from '@/components/auth/auth-hero';
 import { ThemedText } from '@/components/themed-text';
@@ -50,7 +50,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.screen}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView style={styles.screen} edges={['top']}>
         <KeyboardAvoidingView
           style={styles.screen}
@@ -151,7 +151,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Brand.navy,
+    backgroundColor: Brand.ivory,
   },
   sheet: {
     flex: 1,

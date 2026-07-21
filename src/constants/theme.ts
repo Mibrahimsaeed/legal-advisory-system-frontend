@@ -2,12 +2,13 @@
  * Legal Advisor AI design system — the single source of truth for color,
  * typography, spacing, radius, elevation, and layout tokens.
  *
- * Light mode is a warm ivory "law library" palette with deep navy ink.
- * Dark mode lives on the brand navy. Gold is reserved for accents and
- * primary actions on dark surfaces so it always reads as intentional.
+ * A minimal monochrome "paper & ink" palette: warm ivory/white surfaces
+ * with near-black ink for text and primary actions. Dark mode inverts to
+ * near-black surfaces with ivory ink. No brand color beyond black/white —
+ * amber is reserved for tiny semantic accents (ratings) only.
  *
  * The `brand*` tokens are identical in both schemes: splash, onboarding,
- * and auth hero surfaces are brand-locked to navy regardless of the
+ * and auth hero surfaces are brand-locked to ivory regardless of the
  * system color scheme.
  */
 
@@ -17,121 +18,122 @@ import { Platform, type ViewStyle } from 'react-native';
 
 /** Raw brand hues. Prefer the semantic `Colors` tokens in screens. */
 export const Brand = {
-  navyDeep: '#0D1424',
-  navy: '#16233F',
-  navyRaised: '#1F2E50',
-  navyBubble: '#2C3B60',
-  gold: '#C9A667',
-  goldBright: '#D4B06A',
-  goldDeep: '#A9873F',
-  ivory: '#F7F3E8',
-  khaki: '#B9AE93',
+  ink: '#141414',
+  inkRaised: '#1F1F1F',
+  ivory: '#F7F6F2',
+  ivoryDeep: '#EFEDE7',
+  cream: '#FBFAF7',
+  white: '#FFFFFF',
+  gray: '#8B8A85',
+  grayLight: '#DEDCD5',
+  amber: '#E7A93B',
+  danger: '#E2513A',
 } as const;
 
 const brandTokens = {
-  brandBackground: Brand.navy,
-  brandBackgroundDeep: Brand.navyDeep,
-  brandSurface: Brand.navyRaised,
-  brandBubble: Brand.navyBubble,
-  brandBorder: 'rgba(247, 243, 232, 0.10)',
-  brandText: Brand.ivory,
-  brandTextSecondary: Brand.khaki,
-  brandAccent: Brand.gold,
-  brandAccentBright: Brand.goldBright,
+  brandBackground: Brand.ivory,
+  brandBackgroundDeep: Brand.cream,
+  brandSurface: Brand.white,
+  brandBubble: Brand.ivoryDeep,
+  brandBorder: 'rgba(20, 20, 20, 0.08)',
+  brandText: Brand.ink,
+  brandTextSecondary: Brand.gray,
+  brandAccent: Brand.ink,
+  brandAccentBright: Brand.ink,
 } as const;
 
 const light = {
   // Surfaces
-  background: '#FAF7F0',
-  surface: '#FFFFFF',
-  surfaceMuted: '#F2EDDF',
+  background: '#FFFFFF',
+  surface: '#F5F4EF',
+  surfaceMuted: '#EDEBE4',
   surfaceElevated: '#FFFFFF',
-  border: '#E7E0CD',
-  borderStrong: '#D7CDB2',
-  overlay: 'rgba(13, 20, 36, 0.45)',
+  border: '#E7E5DD',
+  borderStrong: '#D6D3C9',
+  overlay: 'rgba(20, 20, 20, 0.45)',
 
   // Text
-  text: '#1B2537',
-  textSecondary: '#565E6E',
-  textMuted: '#9096A1',
+  text: Brand.ink,
+  textSecondary: '#5B5A54',
+  textMuted: '#9C9A92',
 
   // Actions
-  primary: Brand.navy,
-  primaryPressed: '#0F1A30',
-  onPrimary: Brand.ivory,
-  accent: Brand.gold,
-  accentStrong: '#B08F53',
-  accentText: '#8A6B2D',
-  accentSoft: '#F1E7CF',
-  link: '#8A6B2D',
+  primary: Brand.ink,
+  primaryPressed: '#000000',
+  onPrimary: '#FFFFFF',
+  accent: Brand.ink,
+  accentStrong: Brand.ink,
+  accentText: Brand.ink,
+  accentSoft: '#EFEEE8',
+  link: Brand.ink,
 
   // Feedback
-  success: '#3F7A57',
-  successSoft: '#E3EFE6',
-  warning: '#A97B2F',
-  warningSoft: '#F6ECD9',
-  danger: '#B3453B',
-  dangerSoft: '#F8E7E4',
+  success: '#2E9E5B',
+  successSoft: '#E7F6EC',
+  warning: Brand.amber,
+  warningSoft: '#FBF1DE',
+  danger: Brand.danger,
+  dangerSoft: '#FBE3DE',
 
   // Controls
   inputBackground: '#FFFFFF',
-  inputBorder: '#E0D8C2',
-  placeholder: '#9BA0AA',
-  icon: '#3C4557',
-  iconMuted: '#8E93A0',
+  inputBorder: '#DEDBD1',
+  placeholder: '#B2AFA5',
+  icon: Brand.ink,
+  iconMuted: '#9C9A92',
 
   // Chat
-  bubbleUser: Brand.navy,
-  bubbleUserText: Brand.ivory,
-  bubbleAssistant: '#FFFFFF',
+  bubbleUser: '#F0EFE9',
+  bubbleUserText: Brand.ink,
+  bubbleAssistant: '#F5F4EF',
 
   ...brandTokens,
 } as const;
 
 const dark: Record<keyof typeof light, string> = {
   // Surfaces
-  background: Brand.navyDeep,
-  surface: '#15203A',
-  surfaceMuted: '#1B2946',
-  surfaceElevated: '#213154',
-  border: '#26355A',
-  borderStrong: '#35476F',
-  overlay: 'rgba(4, 8, 16, 0.60)',
+  background: '#121212',
+  surface: '#1C1C1C',
+  surfaceMuted: '#242424',
+  surfaceElevated: '#242424',
+  border: 'rgba(255, 255, 255, 0.10)',
+  borderStrong: 'rgba(255, 255, 255, 0.18)',
+  overlay: 'rgba(0, 0, 0, 0.6)',
 
   // Text
-  text: '#F2EEE2',
-  textSecondary: Brand.khaki,
-  textMuted: '#7E869B',
+  text: '#F5F4EF',
+  textSecondary: '#B7B5AB',
+  textMuted: '#7A7972',
 
   // Actions
-  primary: Brand.goldBright,
-  primaryPressed: '#C29B54',
-  onPrimary: Brand.navy,
-  accent: Brand.gold,
-  accentStrong: Brand.goldBright,
-  accentText: '#E2C589',
-  accentSoft: 'rgba(201, 166, 103, 0.14)',
-  link: '#E2C589',
+  primary: '#FFFFFF',
+  primaryPressed: '#E7E5DD',
+  onPrimary: Brand.ink,
+  accent: '#FFFFFF',
+  accentStrong: '#FFFFFF',
+  accentText: '#FFFFFF',
+  accentSoft: 'rgba(255, 255, 255, 0.08)',
+  link: '#FFFFFF',
 
   // Feedback
-  success: '#82BD98',
-  successSoft: 'rgba(90, 160, 115, 0.16)',
-  warning: '#DDB472',
-  warningSoft: 'rgba(200, 150, 70, 0.16)',
-  danger: '#E28B80',
-  dangerSoft: 'rgba(190, 90, 78, 0.18)',
+  success: '#57C883',
+  successSoft: 'rgba(87, 200, 131, 0.12)',
+  warning: Brand.amber,
+  warningSoft: 'rgba(231, 169, 59, 0.12)',
+  danger: '#F1735C',
+  dangerSoft: 'rgba(241, 115, 92, 0.12)',
 
   // Controls
-  inputBackground: '#15203A',
-  inputBorder: '#2B3B63',
-  placeholder: '#79819B',
-  icon: '#C6C2B2',
-  iconMuted: '#79819B',
+  inputBackground: '#1C1C1C',
+  inputBorder: 'rgba(255, 255, 255, 0.16)',
+  placeholder: '#5E5D56',
+  icon: '#FFFFFF',
+  iconMuted: '#7A7972',
 
   // Chat
-  bubbleUser: '#33436C',
-  bubbleUserText: '#F2EEE2',
-  bubbleAssistant: '#15203A',
+  bubbleUser: '#242424',
+  bubbleUserText: '#FFFFFF',
+  bubbleAssistant: '#1C1C1C',
 
   ...brandTokens,
 };
@@ -200,28 +202,20 @@ const shadow = (
   offsetY: number,
   elevation: number,
 ): ViewStyle => ({
-  shadowColor: Brand.navyDeep,
+  shadowColor: Brand.ink,
   shadowOpacity: opacity,
   shadowRadius: radius,
   shadowOffset: { width: 0, height: offsetY },
   elevation,
 });
 
-/** Elevation system — soft navy-tinted shadows, never harsh. */
+/** Elevation system — soft ink-tinted shadows. */
 export const Shadows = {
   none: { shadowOpacity: 0, elevation: 0 } satisfies ViewStyle as ViewStyle,
   /** Resting cards. */
-  card: shadow(0.06, 12, 4, 2),
+  card: shadow(0.05, 12, 4, 2),
   /** Pressed/hovered cards, sticky headers. */
-  raised: shadow(0.1, 18, 6, 5),
+  raised: shadow(0.08, 18, 6, 5),
   /** FABs, modals, floating bars. */
-  floating: shadow(0.16, 24, 10, 9),
-  /** Gold glow behind primary brand CTAs. */
-  goldGlow: {
-    shadowColor: Brand.gold,
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
-  } satisfies ViewStyle as ViewStyle,
+  floating: shadow(0.14, 24, 10, 9),
 } as const;

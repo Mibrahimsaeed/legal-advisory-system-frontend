@@ -28,7 +28,7 @@ type NextButtonProps = {
 };
 
 /**
- * Gold circular advance button wrapped in a progress ring that fills as
+ * Black circular advance button wrapped in a progress ring that fills as
  * onboarding progresses; the arrow becomes a checkmark on the last page.
  */
 export default function NextButton({ page, total, onPress }: NextButtonProps) {
@@ -56,7 +56,7 @@ export default function NextButton({ page, total, onPress }: NextButtonProps) {
           cx={OUTER / 2}
           cy={OUTER / 2}
           r={RING_RADIUS}
-          stroke="rgba(247, 243, 232, 0.15)"
+          stroke="rgba(20, 20, 20, 0.12)"
           strokeWidth={RING_STROKE}
           fill="none"
         />
@@ -64,7 +64,7 @@ export default function NextButton({ page, total, onPress }: NextButtonProps) {
           cx={OUTER / 2}
           cy={OUTER / 2}
           r={RING_RADIUS}
-          stroke={Brand.gold}
+          stroke={Brand.ink}
           strokeWidth={RING_STROKE}
           strokeLinecap="round"
           strokeDasharray={`${CIRCUMFERENCE}`}
@@ -76,7 +76,7 @@ export default function NextButton({ page, total, onPress }: NextButtonProps) {
 
       <View style={styles.core}>
         <Animated.View key={isLast ? 'check' : 'arrow'} entering={ZoomIn.duration(200)}>
-          <Icon name={isLast ? 'check' : 'forward'} size={24} color={Brand.navy} weight="semibold" />
+          <Icon name={isLast ? 'check' : 'forward'} size={24} color={Brand.white} weight="semibold" />
         </Animated.View>
       </View>
     </PressableScale>
@@ -97,9 +97,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: Radius.full,
-    backgroundColor: Brand.goldBright,
+    backgroundColor: Brand.ink,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadows.goldGlow,
+    ...Shadows.raised,
   },
 });

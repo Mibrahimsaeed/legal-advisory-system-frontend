@@ -5,7 +5,7 @@ import { Brand } from '@/constants/theme';
 
 type AppLogoProps = {
   size?: number;
-  /** Stroke color; defaults to brand gold. */
+  /** Stroke color; defaults to brand ink. */
   color?: string;
   /** Draw the surrounding ring. */
   ring?: boolean;
@@ -15,7 +15,7 @@ type AppLogoProps = {
  * The scales-of-justice mark, drawn as strokes so it stays crisp at any
  * size and can be tinted per surface.
  */
-export default function AppLogo({ size = 96, color = Brand.gold, ring = false }: AppLogoProps) {
+export default function AppLogo({ size = 96, color = Brand.ink, ring = false }: AppLogoProps) {
   const iconSize = size * (ring ? 0.52 : 0.62);
   const strokeWidth = 1.5;
 
@@ -24,7 +24,7 @@ export default function AppLogo({ size = 96, color = Brand.gold, ring = false }:
       style={[
         styles.container,
         { width: size, height: size, borderRadius: size / 2 },
-        ring && { borderWidth: 1, borderColor: `${Brand.gold}55`, backgroundColor: `${Brand.gold}14` },
+        ring && { borderWidth: 1, borderColor: `${Brand.ink}22`, backgroundColor: `${Brand.ink}0A` },
       ]}
     >
       <Svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none">

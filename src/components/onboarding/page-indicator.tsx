@@ -14,7 +14,7 @@ type PageIndicatorProps = {
   pageWidth: number;
 };
 
-const INACTIVE = 'rgba(185, 174, 147, 0.4)';
+const INACTIVE = 'rgba(20, 20, 20, 0.18)';
 
 function IndicatorDot({
   index,
@@ -29,7 +29,7 @@ function IndicatorDot({
     const range = [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth];
     return {
       width: interpolate(scrollX.value, range, [7, 26, 7], 'clamp'),
-      backgroundColor: interpolateColor(scrollX.value, range, [INACTIVE, Brand.gold, INACTIVE]),
+      backgroundColor: interpolateColor(scrollX.value, range, [INACTIVE, Brand.ink, INACTIVE]),
     };
   });
 

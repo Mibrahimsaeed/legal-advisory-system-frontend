@@ -15,7 +15,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Icon } from '@/components/ui/icon';
 import { TypingDots } from '@/components/ui/typing-dots';
 import { Durations, Easings } from '@/constants/motion';
-import { Brand, Radius, Spacing } from '@/constants/theme';
+import { Brand, Radius, Shadows, Spacing } from '@/constants/theme';
 
 const QUESTION = 'Can my employer fire me without notice?';
 const ANSWER =
@@ -93,12 +93,12 @@ export default function ChatPreview() {
         style={styles.answerRow}
       >
         <View style={styles.avatar}>
-          <Icon name="sparkles" size={15} color={Brand.gold} />
+          <Icon name="sparkles" size={15} color={Brand.white} />
         </View>
 
         <View style={[styles.bubble, styles.answerBubble]}>
           {phase === 'idle' || phase === 'dots' ? (
-            <TypingDots color={Brand.khaki} />
+            <TypingDots color={Brand.gray} />
           ) : (
             <ThemedText type="small" themeColor="brandText" style={styles.bubbleText}>
               {typed}
@@ -117,11 +117,12 @@ const styles = StyleSheet.create({
   card: {
     width: 276,
     borderRadius: Radius.xl,
-    backgroundColor: Brand.navyRaised,
+    backgroundColor: Brand.white,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(247, 243, 232, 0.12)',
+    borderColor: 'rgba(20, 20, 20, 0.08)',
     padding: Spacing.lg + 2,
     gap: Spacing.lg - 2,
+    ...Shadows.card,
   },
   questionRow: {
     alignItems: 'flex-end',
@@ -135,9 +136,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(201, 166, 103, 0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(201, 166, 103, 0.35)',
+    backgroundColor: Brand.ink,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 2,
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.lg - 2,
     paddingVertical: Spacing.md - 2,
-    backgroundColor: Brand.navyBubble,
+    backgroundColor: Brand.ivoryDeep,
   },
   questionBubble: {
     maxWidth: '86%',
@@ -156,13 +155,16 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopLeftRadius: Radius.xs,
     minHeight: 108,
+    backgroundColor: Brand.cream,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(20, 20, 20, 0.06)',
   },
   bubbleText: {
     fontSize: 13,
     lineHeight: 19,
   },
   caret: {
-    color: Brand.gold,
+    color: Brand.ink,
     fontSize: 13,
   },
 });

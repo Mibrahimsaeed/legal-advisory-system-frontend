@@ -5,10 +5,10 @@ import { ThemedText } from '@/components/themed-text';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { Durations } from '@/constants/motion';
-import { Brand, Radius, Shadows, Spacing } from '@/constants/theme';
+import { Radius, Shadows, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'gold' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 type ButtonProps = {
@@ -46,7 +46,6 @@ export function Button({
 
   const palette: Record<ButtonVariant, { bg: string; text: string; border?: string; shadow?: ViewStyle }> = {
     primary: { bg: theme.primary, text: theme.onPrimary, shadow: Shadows.card },
-    gold: { bg: Brand.goldBright, text: Brand.navy, shadow: Shadows.goldGlow },
     secondary: { bg: 'transparent', text: theme.text, border: theme.borderStrong },
     ghost: { bg: 'transparent', text: theme.accentText },
     danger: { bg: theme.danger, text: '#FFF7F5', shadow: Shadows.card },

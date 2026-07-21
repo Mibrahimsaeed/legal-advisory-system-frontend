@@ -20,6 +20,7 @@ import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 import AppLogo from '@/components/app-logo';
 import { ThemedText } from '@/components/themed-text';
+import ScalesEmblem from '@/components/ui/scales-emblem';
 import { Durations, Easings, Springs } from '@/constants/motion';
 import { Brand, Spacing } from '@/constants/theme';
 
@@ -29,8 +30,8 @@ const EXIT_MS = 420;
 const GLOW_SIZE = 300;
 
 /**
- * Animated brand splash. Continues the native splash (same navy) with the
- * logo scaling in over a breathing gold glow, then fades the whole
+ * Animated brand splash. Continues the native splash (same ivory) with the
+ * logo scaling in over a breathing ink glow, then fades the whole
  * composition out and hands off to onboarding.
  */
 export default function SplashScreen() {
@@ -100,7 +101,11 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.screen}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
+
+      <View style={styles.watermark} pointerEvents="none">
+        <ScalesEmblem size={320} strokeWidth={1.5} />
+      </View>
 
       <Animated.View style={[styles.content, containerStyle]}>
         <View style={styles.logoStack}>
@@ -108,9 +113,9 @@ export default function SplashScreen() {
             <Svg width={GLOW_SIZE} height={GLOW_SIZE}>
               <Defs>
                 <RadialGradient id="splashGlow" cx="50%" cy="50%" r="50%">
-                  <Stop offset="0%" stopColor={Brand.gold} stopOpacity={0.28} />
-                  <Stop offset="55%" stopColor={Brand.gold} stopOpacity={0.1} />
-                  <Stop offset="100%" stopColor={Brand.gold} stopOpacity={0} />
+                  <Stop offset="0%" stopColor={Brand.ink} stopOpacity={0.08} />
+                  <Stop offset="55%" stopColor={Brand.ink} stopOpacity={0.03} />
+                  <Stop offset="100%" stopColor={Brand.ink} stopOpacity={0} />
                 </RadialGradient>
               </Defs>
               <Circle cx={GLOW_SIZE / 2} cy={GLOW_SIZE / 2} r={GLOW_SIZE / 2} fill="url(#splashGlow)" />
@@ -150,7 +155,7 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Brand.navy,
+    backgroundColor: Brand.ivory,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -177,5 +182,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: Spacing.xxl + Spacing.lg,
     alignItems: 'center',
+  },
+  watermark: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.05,
   },
 });

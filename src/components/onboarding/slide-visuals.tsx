@@ -15,19 +15,19 @@ import Svg, { Circle } from 'react-native-svg';
 import { ThemedText } from '@/components/themed-text';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Easings } from '@/constants/motion';
-import { Brand, Radius, Spacing } from '@/constants/theme';
+import { Brand, Radius, Shadows, Spacing } from '@/constants/theme';
 
-const IVORY_FAINT = 'rgba(247, 243, 232, 0.14)';
-const GOLD_FAINT = 'rgba(201, 166, 103, 0.16)';
+const INK_FAINT = 'rgba(20, 20, 20, 0.08)';
+const INK_SOFT = 'rgba(20, 20, 20, 0.35)';
 
-function Bar({ width, gold = false }: { width: number | `${number}%`; gold?: boolean }) {
+function Bar({ width, strong = false }: { width: number | `${number}%`; strong?: boolean }) {
   return (
     <View
       style={{
         width,
         height: 8,
         borderRadius: 4,
-        backgroundColor: gold ? GOLD_FAINT : IVORY_FAINT,
+        backgroundColor: strong ? INK_SOFT : INK_FAINT,
       }}
     />
   );
@@ -64,10 +64,10 @@ export function DocumentStackVisual() {
       <Animated.View style={[styles.docCard, styles.docFront, frontStyle]}>
         <View style={styles.docHeader}>
           <View style={styles.docIconCircle}>
-            <Icon name="document" size={16} color={Brand.gold} />
+            <Icon name="document" size={16} color={Brand.ink} />
           </View>
           <View style={styles.docHeaderBars}>
-            <Bar width={110} gold />
+            <Bar width={110} strong />
             <Bar width={70} />
           </View>
         </View>
@@ -78,7 +78,7 @@ export function DocumentStackVisual() {
           <Bar width="60%" />
         </View>
         <View style={styles.docFooter}>
-          <Icon name="shield" size={15} color={Brand.gold} />
+          <Icon name="shield" size={15} color={Brand.ink} />
           <ThemedText type="caption" themeColor="brandAccent">
             Reviewed in plain language
           </ThemedText>
@@ -91,7 +91,7 @@ export function DocumentStackVisual() {
 function FeatureBadge({ icon, label }: { icon: IconName; label: string }) {
   return (
     <View style={styles.featureBadge}>
-      <Icon name={icon} size={14} color={Brand.gold} />
+      <Icon name={icon} size={14} color={Brand.ink} />
       <ThemedText type="caption" themeColor="brandText">
         {label}
       </ThemedText>
@@ -126,8 +126,8 @@ export function PrivacyVisual() {
               cx={75}
               cy={75}
               r={70}
-              stroke={Brand.gold}
-              strokeOpacity={0.5}
+              stroke={Brand.ink}
+              strokeOpacity={0.3}
               strokeWidth={1.5}
               strokeDasharray="2 10"
               strokeLinecap="round"
@@ -136,7 +136,7 @@ export function PrivacyVisual() {
           </Svg>
         </Animated.View>
         <View style={styles.lockCircle}>
-          <Icon name="lock" size={26} color={Brand.gold} />
+          <Icon name="lock" size={26} color={Brand.ink} />
         </View>
       </View>
 
@@ -160,9 +160,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 220,
     borderRadius: Radius.xl - 4,
-    backgroundColor: Brand.navyRaised,
+    backgroundColor: Brand.white,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(247, 243, 232, 0.12)',
+    borderColor: 'rgba(20, 20, 20, 0.08)',
+    ...Shadows.card,
   },
   docBack: {
     height: 190,
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: Radius.sm,
-    backgroundColor: GOLD_FAINT,
+    backgroundColor: Brand.ivoryDeep,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -214,11 +215,12 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: Radius.full,
-    backgroundColor: GOLD_FAINT,
+    backgroundColor: Brand.white,
     borderWidth: 1,
-    borderColor: 'rgba(201, 166, 103, 0.35)',
+    borderColor: 'rgba(20, 20, 20, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
+    ...Shadows.card,
   },
   featureRow: {
     flexDirection: 'row',
@@ -229,7 +231,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Brand.navyBubble,
+    backgroundColor: Brand.white,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(20, 20, 20, 0.08)',
     borderRadius: Radius.full,
     paddingHorizontal: Spacing.md,
     height: 30,

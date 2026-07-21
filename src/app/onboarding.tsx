@@ -23,6 +23,7 @@ import PageIndicator from '@/components/onboarding/page-indicator';
 import { DocumentStackVisual, PrivacyVisual } from '@/components/onboarding/slide-visuals';
 import { ThemedText } from '@/components/themed-text';
 import { PressableScale } from '@/components/ui/pressable-scale';
+import ScalesEmblem from '@/components/ui/scales-emblem';
 import { Durations, Easings, staggerDelay } from '@/constants/motion';
 import { Brand, Layout, Spacing } from '@/constants/theme';
 
@@ -33,12 +34,12 @@ type Slide = {
   description: string;
 };
 
-function SlideTitle({ before, gold, after }: { before?: string; gold: string; after?: string }) {
+function SlideTitle({ before, emphasis, after }: { before?: string; emphasis: string; after?: string }) {
   return (
     <ThemedText type="title" themeColor="brandText" style={styles.title}>
       {before ? `${before}\n` : ''}
-      <ThemedText type="title" themeColor="brandAccent" style={styles.title}>
-        {gold}
+      <ThemedText type="title" themeColor="brandText" style={[styles.title, styles.titleEmphasis]}>
+        {emphasis}
       </ThemedText>
       {after ? `\n${after}` : ''}
     </ThemedText>
@@ -49,21 +50,21 @@ const SLIDES: Slide[] = [
   {
     key: 'ask',
     visual: <ChatPreview />,
-    title: <SlideTitle before="Ask legal" gold="questions" after="instantly" />,
+    title: <SlideTitle before="Ask legal" emphasis="questions" after="instantly" />,
     description:
       'Get simple, clear answers to complex legal topics in seconds — no confusing jargon.',
   },
   {
     key: 'documents',
     visual: <DocumentStackVisual />,
-    title: <SlideTitle before="Understand" gold="documents" after="& your rights" />,
+    title: <SlideTitle before="Understand" emphasis="documents" after="& your rights" />,
     description:
       'Contracts, notices, and the rules that protect you — summarised in plain language.',
   },
   {
     key: 'private',
     visual: <PrivacyVisual />,
-    title: <SlideTitle before="Confidential &" gold="always" after="available" />,
+    title: <SlideTitle before="Confidential &" emphasis="always" after="available" />,
     description:
       'Your questions stay private, any time of day. And when a real lawyer is needed, we say so.',
   },
@@ -158,7 +159,11 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
+
+      <View style={styles.watermark} pointerEvents="none">
+        <ScalesEmblem size={280} strokeWidth={1.5} />
+      </View>
 
       <Animated.View entering={FadeIn.duration(Durations.slow)} style={styles.header}>
         <AppLogo size={34} />
@@ -204,7 +209,7 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Brand.navy,
+    backgroundColor: Brand.ivory,
   },
   header: {
     flexDirection: 'row',
@@ -237,6 +242,9 @@ const styles = StyleSheet.create({
     fontSize: 34,
     lineHeight: 42,
   },
+  titleEmphasis: {
+    fontStyle: 'italic',
+  },
   description: {
     marginTop: Spacing.lg + 2,
     maxWidth: 300,
@@ -250,5 +258,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.screenPadding + 8,
     paddingBottom: Spacing.lg,
     paddingTop: Spacing.sm,
+  },
+  watermark: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.05,
   },
 });

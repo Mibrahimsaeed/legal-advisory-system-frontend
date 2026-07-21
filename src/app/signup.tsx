@@ -2,15 +2,15 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useRef, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AuthHero } from '@/components/auth/auth-hero';
 import { ThemedText } from '@/components/themed-text';
@@ -62,7 +62,7 @@ export default function SignupScreen() {
 
   return (
     <View style={styles.screen}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView style={styles.screen} edges={['top']}>
         <KeyboardAvoidingView
           style={styles.screen}
@@ -170,7 +170,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Brand.navy,
+    backgroundColor: Brand.ivory,
   },
   sheet: {
     flex: 1,

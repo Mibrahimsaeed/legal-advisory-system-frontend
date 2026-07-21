@@ -97,18 +97,18 @@ export default function HomeScreen() {
             style={[styles.askCard, Shadows.raised]}
           >
             <View style={styles.askIconCircle}>
-              <Icon name="sparkles" size={IconSize.lg} color={Brand.gold} />
+              <Icon name="sparkles" size={IconSize.lg} color={Brand.white} />
             </View>
             <View style={styles.askTextBlock}>
-              <ThemedText type="subtitle" themeColor="brandText">
+              <ThemedText type="subtitle" style={styles.askTitle}>
                 Ask a legal question
               </ThemedText>
-              <ThemedText type="small" themeColor="brandTextSecondary">
+              <ThemedText type="small" style={styles.askSubtitle}>
                 Plain-language answers, in seconds
               </ThemedText>
             </View>
             <View style={styles.askArrowCircle}>
-              <Icon name="forward" size={IconSize.md} color={Brand.navy} />
+              <Icon name="forward" size={IconSize.md} color={Brand.ink} />
             </View>
           </PressableScale>
         </Animated.View>
@@ -224,16 +224,15 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     borderRadius: Radius.xl - 4,
     padding: Spacing.lg + 2,
-    backgroundColor: Brand.navy,
-    experimental_backgroundImage: `linear-gradient(135deg, ${Brand.navyRaised}, ${Brand.navy} 65%)`,
+    backgroundColor: Brand.ink,
   },
   askIconCircle: {
     width: 46,
     height: 46,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(201, 166, 103, 0.16)',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(201, 166, 103, 0.35)',
+    borderColor: 'rgba(255, 255, 255, 0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -241,11 +240,17 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
+  askTitle: {
+    color: Brand.white,
+  },
+  askSubtitle: {
+    color: 'rgba(255, 255, 255, 0.65)',
+  },
   askArrowCircle: {
     width: 36,
     height: 36,
     borderRadius: Radius.full,
-    backgroundColor: Brand.goldBright,
+    backgroundColor: Brand.white,
     alignItems: 'center',
     justifyContent: 'center',
   },

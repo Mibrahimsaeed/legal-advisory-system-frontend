@@ -15,7 +15,7 @@ type AuthHeroProps = {
   showBack?: boolean;
 };
 
-/** Navy hero block shared by the auth screens: logo, serif title, subtitle. */
+/** Ivory hero block shared by the auth screens: logo, serif title, subtitle. */
 export function AuthHero({ title, subtitle, showBack = false }: AuthHeroProps) {
   const router = useRouter();
 
@@ -29,7 +29,7 @@ export function AuthHero({ title, subtitle, showBack = false }: AuthHeroProps) {
           accessibilityLabel="Go back"
           style={styles.backButton}
         >
-          <Icon name="back" size={IconSize.md} color={Brand.ivory} />
+          <Icon name="back" size={IconSize.md} color={Brand.ink} />
         </PressableScale>
       ) : null}
 
@@ -69,7 +69,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: Radius.full,
-    backgroundColor: Brand.navyRaised,
+    backgroundColor: Brand.white,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(20, 20, 20, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
