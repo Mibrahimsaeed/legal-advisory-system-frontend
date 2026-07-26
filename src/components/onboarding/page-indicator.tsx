@@ -6,15 +6,13 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import { Brand } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 type PageIndicatorProps = {
   count: number;
   scrollX: SharedValue<number>;
   pageWidth: number;
 };
-
-const INACTIVE = 'rgba(20, 20, 20, 0.18)';
 
 function IndicatorDot({
   index,
@@ -25,18 +23,23 @@ function IndicatorDot({
   scrollX: SharedValue<number>;
   pageWidth: number;
 }) {
+  const theme = useTheme();
+
   const animatedStyle = useAnimatedStyle(() => {
     const range = [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth];
     return {
-      width: interpolate(scrollX.value, range, [7, 26, 7], 'clamp'),
-      backgroundColor: interpolateColor(scrollX.value, range, [INACTIVE, Brand.ink, INACTIVE]),
+      width: interpolate(scrollX.value, range, [6, 24, 6], 'clamp'),
+      backgroundColor: interpolateColor(
+        scrollX.value,
+        range,
+        [theme.border, theme.gold, theme.border],
+      ),
     };
   });
 
   return <Animated.View style={[styles.dot, animatedStyle]} />;
 }
 
-/** Scroll-driven page dots — the active dot stretches and fills gold as you swipe. */
 export default function PageIndicator({ count, scrollX, pageWidth }: PageIndicatorProps) {
   return (
     <View style={styles.container}>
@@ -51,10 +54,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   dot: {
-    height: 7,
-    borderRadius: 4,
+    height: 6,
+    borderRadius: 3,
   },
 });

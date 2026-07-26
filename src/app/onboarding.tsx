@@ -16,32 +16,65 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 
-import AppLogo from '@/components/app-logo';
 import ChatPreview from '@/components/onboarding/chat-preview';
+import { FeatureCardsVisual } from '@/components/onboarding/feature-cards';
 import NextButton from '@/components/onboarding/next-button';
 import PageIndicator from '@/components/onboarding/page-indicator';
-import { DocumentStackVisual, PrivacyVisual } from '@/components/onboarding/slide-visuals';
+import { PedestalScalesVisual } from '@/components/onboarding/pedestal-scales';
 import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
+import { CourtColumnsBackground } from '@/components/ui/court-columns';
 import { PressableScale } from '@/components/ui/pressable-scale';
-import ScalesEmblem from '@/components/ui/scales-emblem';
 import { Durations, Easings, staggerDelay } from '@/constants/motion';
-import { Brand, Layout, Spacing } from '@/constants/theme';
+import { Layout, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { useThemeContext } from '@/providers/theme-provider';
 
 type Slide = {
   key: string;
   visual: ReactNode;
   title: ReactNode;
-  description: string;
+  description?: string;
 };
 
-function SlideTitle({ before, emphasis, after }: { before?: string; emphasis: string; after?: string }) {
+function TitleSlide1() {
+  const theme = useTheme();
   return (
-    <ThemedText type="title" themeColor="brandText" style={styles.title}>
-      {before ? `${before}\n` : ''}
-      <ThemedText type="title" themeColor="brandText" style={[styles.title, styles.titleEmphasis]}>
-        {emphasis}
+    <ThemedText style={[styles.title, { color: theme.text }]}>
+      Ask legal{'\n'}
+      <ThemedText style={[styles.title, styles.italic, { color: theme.gold }]}>
+        questions{'\n'}
       </ThemedText>
-      {after ? `\n${after}` : ''}
+      instantly
+    </ThemedText>
+  );
+}
+
+function TitleSlide2() {
+  const theme = useTheme();
+  return (
+    <ThemedText style={[styles.title, { color: theme.text }]}>
+      Built for{' '}
+      <ThemedText style={[styles.title, styles.italic, { color: theme.gold }]}>
+        clarity{'\n'}
+      </ThemedText>
+      and{' '}
+      <ThemedText style={[styles.title, styles.italic, { color: theme.gold }]}>
+        confidence
+      </ThemedText>
+    </ThemedText>
+  );
+}
+
+function TitleSlide3() {
+  const theme = useTheme();
+  return (
+    <ThemedText style={[styles.title, { color: theme.text }]}>
+      Your legal{'\n'}
+      companion{'\n'}
+      <ThemedText style={[styles.title, { color: theme.text }]}>
+        24/7
+      </ThemedText>
     </ThemedText>
   );
 }
@@ -50,23 +83,21 @@ const SLIDES: Slide[] = [
   {
     key: 'ask',
     visual: <ChatPreview />,
-    title: <SlideTitle before="Ask legal" emphasis="questions" after="instantly" />,
+    title: <TitleSlide1 />,
     description:
       'Get simple, clear answers to complex legal topics in seconds — no confusing jargon.',
   },
   {
-    key: 'documents',
-    visual: <DocumentStackVisual />,
-    title: <SlideTitle before="Understand" emphasis="documents" after="& your rights" />,
-    description:
-      'Contracts, notices, and the rules that protect you — summarised in plain language.',
+    key: 'clarity',
+    visual: <FeatureCardsVisual />,
+    title: <TitleSlide2 />,
   },
   {
-    key: 'private',
-    visual: <PrivacyVisual />,
-    title: <SlideTitle before="Confidential &" emphasis="always" after="available" />,
+    key: 'companion',
+    visual: <PedestalScalesVisual />,
+    title: <TitleSlide3 />,
     description:
-      'Your questions stay private, any time of day. And when a real lawyer is needed, we say so.',
+      'From contracts to workplace issues, get the guidance you need, anytime.',
   },
 ];
 
@@ -81,36 +112,37 @@ function OnboardingSlide({
   width: number;
   slide: Slide;
 }) {
+  const theme = useTheme();
   const range = [(index - 1) * width, index * width, (index + 1) * width];
 
-  // Text glides slightly faster than the page, the visual slightly
-  // slower — a subtle depth cue while swiping.
   const visualStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollX.value, range, [0.2, 1, 0.2], 'clamp'),
-    transform: [{ translateX: interpolate(scrollX.value, range, [28, 0, -28], 'clamp') }],
+    opacity: interpolate(scrollX.value, range, [0.1, 1, 0.1], 'clamp'),
+    transform: [{ translateX: interpolate(scrollX.value, range, [24, 0, -24], 'clamp') }],
   }));
 
   const textStyle = useAnimatedStyle(() => ({
     opacity: interpolate(scrollX.value, range, [0, 1, 0], 'clamp'),
-    transform: [{ translateX: interpolate(scrollX.value, range, [64, 0, -64], 'clamp') }],
+    transform: [{ translateX: interpolate(scrollX.value, range, [48, 0, -48], 'clamp') }],
   }));
 
   return (
     <View style={[styles.slide, { width }]}>
-      <Animated.View style={[styles.slideVisual, visualStyle]}>
-        <Animated.View entering={FadeInDown.delay(staggerDelay(0, 120)).duration(Durations.slow).easing(Easings.enter)}>
-          {slide.visual}
-        </Animated.View>
-      </Animated.View>
-
       <Animated.View style={[styles.slideText, textStyle]}>
-        <Animated.View entering={FadeInDown.delay(staggerDelay(1, 200)).duration(Durations.slow).easing(Easings.enter)}>
+        <Animated.View entering={FadeInDown.delay(staggerDelay(0, 150)).duration(Durations.slow).easing(Easings.enter)}>
           {slide.title}
         </Animated.View>
-        <Animated.View entering={FadeInDown.delay(staggerDelay(2, 200)).duration(Durations.slow).easing(Easings.enter)}>
-          <ThemedText type="small" themeColor="brandTextSecondary" style={styles.description}>
-            {slide.description}
-          </ThemedText>
+        {slide.description ? (
+          <Animated.View entering={FadeInDown.delay(staggerDelay(1, 150)).duration(Durations.slow).easing(Easings.enter)}>
+            <ThemedText style={[styles.description, { color: theme.textSecondary }]}>
+              {slide.description}
+            </ThemedText>
+          </Animated.View>
+        ) : null}
+      </Animated.View>
+
+      <Animated.View style={[styles.slideVisual, visualStyle]}>
+        <Animated.View entering={FadeInDown.delay(staggerDelay(2, 150)).duration(Durations.slow).easing(Easings.enter)}>
+          {slide.visual}
         </Animated.View>
       </Animated.View>
     </View>
@@ -119,6 +151,8 @@ function OnboardingSlide({
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const { scheme } = useThemeContext();
   const { width } = useWindowDimensions();
   const scrollX = useSharedValue(0);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -138,16 +172,7 @@ export default function OnboardingScreen() {
     },
   );
 
-  const skipStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      scrollX.value,
-      [(SLIDES.length - 2) * width, (SLIDES.length - 1) * width],
-      [1, 0],
-      'clamp',
-    ),
-  }));
-
-  const finish = () => router.replace('/login');
+  const finish = () => router.replace('/(tabs)/chat');
 
   const handleNext = () => {
     if (isLast) {
@@ -158,31 +183,29 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
-      <StatusBar style="dark" />
+    <SafeAreaView style={[styles.screen, { backgroundColor: theme.background }]} edges={['top', 'bottom']}>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
 
-      <View style={styles.watermark} pointerEvents="none">
-        <ScalesEmblem size={280} strokeWidth={1.5} />
-      </View>
+      {/* Background Court Columns */}
+      <CourtColumnsBackground opacity={scheme === 'dark' ? 0.18 : 0.08} />
 
+      {/* Top Header */}
       <Animated.View entering={FadeIn.duration(Durations.slow)} style={styles.header}>
-        <AppLogo size={34} />
-        <Animated.View style={skipStyle}>
-          <PressableScale
-            onPress={finish}
-            haptic="selection"
-            hitSlop={12}
-            disabled={isLast}
-            accessibilityLabel="Skip onboarding"
-            style={styles.skipButton}
-          >
-            <ThemedText type="smallMedium" themeColor="brandTextSecondary">
-              Skip
-            </ThemedText>
-          </PressableScale>
-        </Animated.View>
+        <View style={{ flex: 1 }} />
+        <PressableScale
+          onPress={finish}
+          haptic="selection"
+          hitSlop={12}
+          accessibilityLabel="Skip onboarding"
+          style={styles.skipButton}
+        >
+          <ThemedText style={[styles.skipText, { color: theme.textSecondary }]}>
+            Skip
+          </ThemedText>
+        </PressableScale>
       </Animated.View>
 
+      {/* Pager */}
       <Animated.ScrollView
         ref={scrollRef}
         horizontal
@@ -198,9 +221,34 @@ export default function OnboardingScreen() {
         ))}
       </Animated.ScrollView>
 
-      <Animated.View entering={FadeIn.delay(250).duration(Durations.slow)} style={styles.footer}>
-        <PageIndicator count={SLIDES.length} scrollX={scrollX} pageWidth={width} />
-        <NextButton page={page} total={SLIDES.length} onPress={handleNext} />
+      {/* Footer Navigation */}
+      <Animated.View entering={FadeIn.delay(200).duration(Durations.slow)} style={styles.footer}>
+        {!isLast ? (
+          <View style={styles.standardFooter}>
+            <PageIndicator count={SLIDES.length} scrollX={scrollX} pageWidth={width} />
+            <NextButton onPress={handleNext} />
+          </View>
+        ) : (
+          <View style={styles.lastFooter}>
+            <Button
+              title="Get Started"
+              variant="primary"
+              onPress={finish}
+              fullWidth
+              style={styles.getStartedButton}
+            />
+            <View style={styles.accountRow}>
+              <ThemedText style={[styles.accountText, { color: theme.textSecondary }]}>
+                Already have an account?{' '}
+              </ThemedText>
+              <PressableScale onPress={() => router.replace('/login')} haptic="light">
+                <ThemedText style={[styles.accountText, styles.signInLink, { color: theme.gold }]}>
+                  Sign in
+                </ThemedText>
+              </PressableScale>
+            </View>
+          </View>
+        )}
       </Animated.View>
     </SafeAreaView>
   );
@@ -209,64 +257,80 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Brand.ivory,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingHorizontal: Layout.screenPadding + 4,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.xs,
+    height: 44,
   },
   skipButton: {
-    minHeight: Layout.touchTarget,
+    minHeight: 40,
     justifyContent: 'center',
     paddingHorizontal: Spacing.xs,
+  },
+  skipText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
   pager: {
     flex: 1,
   },
   slide: {
-    paddingTop: Spacing.xl,
-    alignItems: 'center',
-  },
-  slideVisual: {
-    alignItems: 'center',
+    paddingTop: Spacing.md,
+    paddingHorizontal: Layout.screenPadding + 4,
   },
   slideText: {
-    width: '100%',
-    paddingHorizontal: Spacing.xxl + 4,
-    marginTop: Spacing.xxl + 8,
+    marginBottom: Spacing.lg,
   },
   title: {
+    fontFamily: 'Georgia',
     fontSize: 34,
     lineHeight: 42,
+    fontWeight: '400',
   },
-  titleEmphasis: {
+  italic: {
     fontStyle: 'italic',
   },
   description: {
-    marginTop: Spacing.lg + 2,
-    maxWidth: 300,
-    fontSize: 15,
-    lineHeight: 23,
+    marginTop: Spacing.md,
+    fontSize: 14,
+    lineHeight: 22,
+    maxWidth: 320,
+  },
+  slideVisual: {
+    flex: 1,
+    justifyContent: 'center',
   },
   footer: {
+    paddingHorizontal: Layout.screenPadding + 8,
+    paddingBottom: Spacing.xl,
+    paddingTop: Spacing.md,
+  },
+  standardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Layout.screenPadding + 8,
-    paddingBottom: Spacing.lg,
-    paddingTop: Spacing.sm,
   },
-  watermark: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  lastFooter: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  getStartedButton: {
+    marginBottom: Spacing.md,
+  },
+  accountRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    opacity: 0.05,
+    marginTop: 4,
+  },
+  accountText: {
+    fontSize: 13.5,
+  },
+  signInLink: {
+    fontWeight: '600',
   },
 });

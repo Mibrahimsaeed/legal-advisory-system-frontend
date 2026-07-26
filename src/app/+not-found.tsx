@@ -20,7 +20,7 @@ export default function NotFoundScreen() {
         message="The screen you're looking for doesn't exist or has moved."
         action={{
           label: 'Go to Home',
-          onPress: () => router.replace('/home'),
+          onPress: () => router.replace('/(tabs)/chat'),
         }}
       />
     </SafeAreaView>

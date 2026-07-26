@@ -13,23 +13,22 @@ import Animated, {
 
 import { ThemedText } from '@/components/themed-text';
 import { Icon } from '@/components/ui/icon';
+import ScalesEmblem from '@/components/ui/scales-emblem';
 import { TypingDots } from '@/components/ui/typing-dots';
 import { Durations, Easings } from '@/constants/motion';
-import { Brand, Radius, Shadows, Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 const QUESTION = 'Can my employer fire me without notice?';
 const ANSWER =
-  'It depends on your contract and local labour law — immediate dismissal is usually reserved for serious misconduct. Here’s what to check…';
+  "It depends on your contract and local labour law — immediate dismissal is usually reserved for serious misconduct. Here's what to check...";
 
-const DOTS_AT_MS = 900;
-const TYPING_AT_MS = 1700;
-const CHAR_INTERVAL_MS = 22;
+const DOTS_AT_MS = 600;
+const TYPING_AT_MS = 1400;
+const CHAR_INTERVAL_MS = 20;
 
-/**
- * The onboarding hero: a miniature conversation where the assistant's
- * answer types itself out after a brief "thinking" pause.
- */
 export default function ChatPreview() {
+  const theme = useTheme();
   const reducedMotion = useReducedMotion();
   const [phase, setPhase] = useState<'idle' | 'dots' | 'typing' | 'done'>(
     reducedMotion ? 'done' : 'idle',
@@ -74,55 +73,68 @@ export default function ChatPreview() {
   const caretStyle = useAnimatedStyle(() => ({ opacity: caretOpacity.value }));
 
   return (
-    <View style={styles.card}>
-      {/* User question */}
-      <Animated.View
-        entering={reducedMotion ? undefined : FadeInDown.delay(300).duration(Durations.gentle).easing(Easings.enter)}
-        style={styles.questionRow}
-      >
-        <View style={[styles.bubble, styles.questionBubble]}>
-          <ThemedText type="small" themeColor="brandText" style={styles.bubbleText}>
-            {QUESTION}
-          </ThemedText>
-        </View>
-      </Animated.View>
+    <View style={styles.container}>
+      {/* Background Watermark */}
+      <View style={styles.watermark} pointerEvents="none">
+        <ScalesEmblem size={180} color={theme.border} strokeWidth={1} />
+      </View>
 
-      {/* Assistant answer */}
-      <Animated.View
-        entering={reducedMotion ? undefined : FadeInDown.delay(700).duration(Durations.gentle).easing(Easings.enter)}
-        style={styles.answerRow}
-      >
-        <View style={styles.avatar}>
-          <Icon name="sparkles" size={15} color={Brand.white} />
-        </View>
-
-        <View style={[styles.bubble, styles.answerBubble]}>
-          {phase === 'idle' || phase === 'dots' ? (
-            <TypingDots color={Brand.gray} />
-          ) : (
-            <ThemedText type="small" themeColor="brandText" style={styles.bubbleText}>
-              {typed}
-              {phase === 'typing' ? (
-                <Animated.Text style={[styles.caret, caretStyle]}>▍</Animated.Text>
-              ) : null}
+      <View style={styles.chatStack}>
+        {/* User Question */}
+        <Animated.View
+          entering={reducedMotion ? undefined : FadeInDown.delay(200).duration(Durations.gentle).easing(Easings.enter)}
+          style={styles.questionRow}
+        >
+          <View style={[styles.bubble, styles.questionBubble, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <ThemedText style={[styles.bubbleText, { color: theme.text }]}>
+              {QUESTION}
             </ThemedText>
-          )}
-        </View>
-      </Animated.View>
+          </View>
+        </Animated.View>
+
+        {/* AI Answer */}
+        <Animated.View
+          entering={reducedMotion ? undefined : FadeInDown.delay(500).duration(Durations.gentle).easing(Easings.enter)}
+          style={styles.answerRow}
+        >
+          <View style={[styles.avatar, { backgroundColor: theme.gold }]}>
+            <Icon name="sparkles" size={14} color={theme.onPrimary} />
+          </View>
+
+          <View style={[styles.bubble, styles.answerBubble, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            {phase === 'idle' || phase === 'dots' ? (
+              <TypingDots color={theme.textSecondary} />
+            ) : (
+              <ThemedText style={[styles.bubbleText, { color: theme.textSecondary }]}>
+                {typed}
+                {phase === 'typing' ? (
+                  <Animated.Text style={[{ color: theme.gold }, caretStyle]}>▍</Animated.Text>
+                ) : null}
+              </ThemedText>
+            )}
+          </View>
+        </Animated.View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    width: 276,
-    borderRadius: Radius.xl,
-    backgroundColor: Brand.white,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(20, 20, 20, 0.08)',
-    padding: Spacing.lg + 2,
-    gap: Spacing.lg - 2,
-    ...Shadows.card,
+  container: {
+    width: '100%',
+    minHeight: 210,
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    marginTop: 8,
+  },
+  watermark: {
+    position: 'absolute',
+    left: 10,
+    top: -10,
+    opacity: 0.2,
+  },
+  chatStack: {
+    gap: Spacing.lg,
   },
   questionRow: {
     alignItems: 'flex-end',
@@ -133,38 +145,30 @@ const styles = StyleSheet.create({
     gap: Spacing.sm + 2,
   },
   avatar: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: Radius.full,
-    backgroundColor: Brand.ink,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 2,
+    marginTop: 4,
   },
   bubble: {
     borderRadius: Radius.lg,
-    paddingHorizontal: Spacing.lg - 2,
-    paddingVertical: Spacing.md - 2,
-    backgroundColor: Brand.ivoryDeep,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderWidth: 1,
   },
   questionBubble: {
-    maxWidth: '86%',
+    maxWidth: '85%',
     borderBottomRightRadius: Radius.xs,
   },
   answerBubble: {
     flex: 1,
     borderTopLeftRadius: Radius.xs,
-    minHeight: 108,
-    backgroundColor: Brand.cream,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(20, 20, 20, 0.06)',
+    minHeight: 96,
   },
   bubbleText: {
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  caret: {
-    color: Brand.ink,
-    fontSize: 13,
+    fontSize: 13.5,
+    lineHeight: 20,
   },
 });

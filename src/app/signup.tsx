@@ -2,25 +2,27 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useRef, useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AuthHero } from '@/components/auth/auth-hero';
+import AppLogo from '@/components/app-logo';
 import { ThemedText } from '@/components/themed-text';
 import { Button } from '@/components/ui/button';
+import { CourtColumnsBackground } from '@/components/ui/court-columns';
+import { Icon } from '@/components/ui/icon';
 import { PressableScale } from '@/components/ui/pressable-scale';
 import { TextField } from '@/components/ui/text-field';
 import { Durations, Easings } from '@/constants/motion';
-import { Brand, Layout, Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
 import { useMockSubmit } from '@/hooks/use-mock-submit';
 import { useTheme } from '@/hooks/use-theme';
+import { useThemeContext } from '@/providers/theme-provider';
 import { haptics } from '@/utils/haptics';
 
 const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
@@ -28,6 +30,7 @@ const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
 export default function SignupScreen() {
   const router = useRouter();
   const theme = useTheme();
+  const { scheme } = useThemeContext();
   const { loading, run } = useMockSubmit();
 
   const [name, setName] = useState('');
@@ -35,8 +38,8 @@ export default function SignupScreen() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({});
 
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
+  const emailRef = useRef<any>(null);
+  const passwordRef = useRef<any>(null);
 
   const handleCreate = () => {
     const nextErrors: typeof errors = {};
@@ -49,7 +52,7 @@ export default function SignupScreen() {
       haptics.warning();
       return;
     }
-    run(() => router.replace('/home'));
+    run(() => router.replace('/(tabs)/chat'));
   };
 
   const goToSignIn = () => {
@@ -61,106 +64,170 @@ export default function SignupScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <StatusBar style="dark" />
-      <SafeAreaView style={styles.screen} edges={['top']}>
+    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+
+      {/* Court Columns Background Image */}
+      <CourtColumnsBackground />
+
+      <SafeAreaView style={styles.transparentContainer} edges={['top', 'bottom']}>
         <KeyboardAvoidingView
-          style={styles.screen}
+          style={styles.transparentContainer}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <AuthHero title="Create your account" subtitle="A few details and you're in" showBack />
-
-          <Animated.View
-            entering={FadeInUp.delay(160).duration(Durations.slow).easing(Easings.enter)}
-            style={[styles.sheet, { backgroundColor: theme.background }]}
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <ScrollView
-              contentContainerStyle={styles.sheetContent}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              bounces={false}
+            {/* Top Navigation Bar with Back Button */}
+            <View style={styles.topBar}>
+              <PressableScale
+                onPress={goToSignIn}
+                haptic="selection"
+                hitSlop={8}
+                accessibilityLabel="Go back"
+                style={[
+                  styles.backButton,
+                  { backgroundColor: theme.card, borderColor: theme.border },
+                ]}
+              >
+                <Icon name="back" size={18} color={theme.text} />
+              </PressableScale>
+            </View>
+
+            {/* Top Hero Section */}
+            <View style={styles.heroSection}>
+              <AppLogo size={80} showText />
+
+              {/* Accent Line under logo text */}
+              <View style={[styles.accentLine, { backgroundColor: theme.gold }]} />
+
+              <ThemedText style={[styles.welcomeTitle, { color: theme.text }]}>
+                Create your account
+              </ThemedText>
+              <ThemedText style={[styles.welcomeSubtitle, { color: theme.textSecondary }]}>
+                A few details and you're in
+              </ThemedText>
+            </View>
+
+            {/* Main Form Card */}
+            <Animated.View
+              entering={FadeInUp.delay(120).duration(Durations.slow).easing(Easings.enter)}
+              style={[
+                styles.formCard,
+                {
+                  backgroundColor: scheme === 'dark' ? 'rgba(22, 27, 34, 0.65)' : 'rgba(255, 255, 255, 0.82)',
+                  borderColor: theme.border,
+                  backdropFilter: 'blur(16px)',
+                } as any,
+              ]}
             >
-              <TextField
-                label="Full name"
-                icon="profile"
-                placeholder="Jordan Smith"
-                autoComplete="name"
-                returnKeyType="next"
-                value={name}
-                error={errors.name}
-                onChangeText={(text) => {
-                  setName(text);
-                  if (errors.name) setErrors((current) => ({ ...current, name: undefined }));
-                }}
-                onSubmitEditing={() => emailRef.current?.focus()}
-              />
+              {/* Full Name Input */}
+              <View style={styles.fieldGroup}>
+                <ThemedText style={[styles.fieldLabel, { color: theme.text }]}>
+                  Full name
+                </ThemedText>
+                <TextField
+                  icon="profile"
+                  placeholder="Jordan Smith"
+                  autoComplete="name"
+                  returnKeyType="next"
+                  value={name}
+                  error={errors.name}
+                  onChangeText={(text) => {
+                    setName(text);
+                    if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
+                  }}
+                  onSubmitEditing={() => emailRef.current?.focus()}
+                />
+              </View>
 
-              <TextField
-                ref={emailRef}
-                label="Email"
-                icon="mail"
-                placeholder="you@example.com"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                autoCorrect={false}
-                returnKeyType="next"
-                value={email}
-                error={errors.email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (errors.email) setErrors((current) => ({ ...current, email: undefined }));
-                }}
-                onSubmitEditing={() => passwordRef.current?.focus()}
-                containerStyle={styles.field}
-              />
+              {/* Email Input */}
+              <View style={styles.fieldGroup}>
+                <ThemedText style={[styles.fieldLabel, { color: theme.text }]}>
+                  Email
+                </ThemedText>
+                <TextField
+                  ref={emailRef}
+                  icon="mail"
+                  placeholder="you@example.com"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect={false}
+                  returnKeyType="next"
+                  value={email}
+                  error={errors.email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                  }}
+                  onSubmitEditing={() => passwordRef.current?.focus()}
+                />
+              </View>
 
-              <TextField
-                ref={passwordRef}
-                label="Password"
-                icon="lock"
-                placeholder="At least 6 characters"
-                secureTextEntry
-                autoComplete="new-password"
-                returnKeyType="done"
-                value={password}
-                error={errors.password}
-                helper="Use at least 6 characters"
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (errors.password) setErrors((current) => ({ ...current, password: undefined }));
-                }}
-                onSubmitEditing={handleCreate}
-                containerStyle={styles.field}
-              />
+              {/* Password Input */}
+              <View style={styles.fieldGroup}>
+                <ThemedText style={[styles.fieldLabel, { color: theme.text }]}>
+                  Password
+                </ThemedText>
+                <TextField
+                  ref={passwordRef}
+                  icon="lock"
+                  placeholder="At least 6 characters"
+                  secureTextEntry
+                  autoComplete="new-password"
+                  returnKeyType="done"
+                  value={password}
+                  error={errors.password}
+                  helper="Use at least 6 characters"
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                  }}
+                  onSubmitEditing={handleCreate}
+                />
+              </View>
 
+              {/* Primary Action Button */}
               <Button
                 title="Create account"
                 onPress={handleCreate}
                 loading={loading}
                 fullWidth
-                style={styles.submit}
+                style={styles.submitButton}
               />
 
-              <ThemedText type="caption" themeColor="textMuted" style={styles.terms}>
+              {/* Terms Disclaimer */}
+              <ThemedText style={[styles.termsText, { color: theme.textSecondary }]}>
                 By continuing you agree that answers are general information, not legal advice.
               </ThemedText>
 
-              <View style={styles.footerRow}>
-                <ThemedText type="small" themeColor="textSecondary">
-                  Already have an account?
+              {/* Sign In Prompt */}
+              <View style={styles.accountPromptRow}>
+                <ThemedText style={[styles.accountPromptText, { color: theme.textSecondary }]}>
+                  Already have an account?{' '}
                 </ThemedText>
-                <PressableScale
-                  onPress={goToSignIn}
-                  haptic="selection"
-                  hitSlop={10}
-                  accessibilityLabel="Sign in"
-                >
-                  <ThemedText type="link">Sign in</ThemedText>
+                <PressableScale onPress={goToSignIn} haptic="selection">
+                  <ThemedText style={[styles.accountPromptText, styles.signInLink, { color: theme.gold }]}>
+                    Sign in
+                  </ThemedText>
                 </PressableScale>
               </View>
-            </ScrollView>
-          </Animated.View>
+            </Animated.View>
+
+            {/* Footer Guarantee Section */}
+            <View style={styles.privacyFooter}>
+              <Icon name="shield" size={20} color={theme.gold} />
+              <ThemedText style={[styles.privacyTitle, { color: theme.gold }]}>
+                Your privacy. Our priority.
+              </ThemedText>
+              <ThemedText style={[styles.privacySubtitle, { color: theme.textSecondary }]}>
+                All conversations are secure and confidential.
+              </ThemedText>
+            </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
@@ -170,34 +237,102 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Brand.ivory,
   },
-  sheet: {
+  transparentContainer: {
     flex: 1,
-    borderTopLeftRadius: Radius.xl + 4,
-    borderTopRightRadius: Radius.xl + 4,
+    backgroundColor: 'transparent',
   },
-  sheetContent: {
-    padding: Layout.screenPadding + 4,
-    paddingTop: Spacing.xxl,
-    paddingBottom: Spacing.xxl,
+  scrollContent: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.xl,
+    width: '100%',
+    maxWidth: 380,
+    alignSelf: 'center',
+    backgroundColor: 'transparent',
   },
-  field: {
-    marginTop: Spacing.lg,
+  topBar: {
+    height: 44,
+    justifyContent: 'center',
+    marginBottom: Spacing.xs,
   },
-  submit: {
-    marginTop: Spacing.xl,
+  backButton: {
+    width: 38,
+    height: 38,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  terms: {
+  heroSection: {
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  accentLine: {
+    height: 2,
+    width: 24,
+    borderRadius: 1,
+    marginTop: 8,
+    marginBottom: Spacing.md,
+  },
+  welcomeTitle: {
+    fontFamily: 'Georgia',
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '400',
+    marginBottom: 4,
     textAlign: 'center',
-    marginTop: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
   },
-  footerRow: {
+  welcomeSubtitle: {
+    fontSize: 13.5,
+    textAlign: 'center',
+  },
+  formCard: {
+    paddingHorizontal: Spacing.md + 2,
+    paddingVertical: Spacing.md + 4,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    gap: Spacing.sm + 4,
+  },
+  fieldGroup: {
+    gap: 6,
+  },
+  fieldLabel: {
+    fontSize: 13.5,
+    fontWeight: '600',
+  },
+  submitButton: {
+    marginTop: 4,
+  },
+  termsText: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 17,
+  },
+  accountPromptRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.xs + 2,
-    marginTop: Spacing.xl,
+    marginTop: Spacing.xs,
+  },
+  accountPromptText: {
+    fontSize: 13.5,
+  },
+  signInLink: {
+    fontWeight: '600',
+  },
+  privacyFooter: {
+    alignItems: 'center',
+    marginTop: Spacing.xxl,
+    gap: 4,
+  },
+  privacyTitle: {
+    fontSize: 13.5,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  privacySubtitle: {
+    fontSize: 12,
+    textAlign: 'center',
   },
 });

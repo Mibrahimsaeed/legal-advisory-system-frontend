@@ -36,9 +36,20 @@ type ConversationsContextValue = {
   /** Creates a conversation from the first user message and returns its id. */
   startConversation: (firstMessage: string, topicId?: string) => string;
   sendMessage: (conversationId: string, text: string) => void;
+  deleteConversation: (id: string) => void;
   /** Conversation id the mock assistant is currently "typing" in, if any. */
   typingIn: string | null;
   clearAll: () => void;
+  /** Message usage and tier status */
+  totalUserMessages: number;
+  isLoggedIn: boolean;
+  setIsLoggedIn: (loggedIn: boolean) => void;
+  isPro: boolean;
+  setIsPro: (pro: boolean) => void;
+  loginModalVisible: boolean;
+  setLoginModalVisible: (visible: boolean) => void;
+  paywallModalVisible: boolean;
+  setPaywallModalVisible: (visible: boolean) => void;
 };
 
 const ConversationsContext = createContext<ConversationsContextValue | undefined>(undefined);
@@ -67,14 +78,14 @@ function generateMockReply(): string {
 
 const TYPING_DELAY_MS = 1800;
 
-/**
- * In-memory conversation store. Simulates an assistant reply after a short
- * "typing" delay so the chat UX (typing indicator, entrance animations)
- * can be exercised before the real API is wired up.
- */
 export function ConversationsProvider({ children }: PropsWithChildren) {
   const [conversations, setConversations] = useState<Conversation[]>(() => buildSeedConversations());
   const [typingIn, setTypingIn] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isPro, setIsPro] = useState<boolean>(false);
+  const [loginModalVisible, setLoginModalVisible] = useState<boolean>(false);
+  const [paywallModalVisible, setPaywallModalVisible] = useState<boolean>(false);
+
   const replyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -83,19 +94,40 @@ export function ConversationsProvider({ children }: PropsWithChildren) {
     };
   }, []);
 
-  const appendMessage = useCallback((conversationId: string, chatMessage: ChatMessage) => {
-    setConversations((current) =>
-      current.map((conversation) =>
-        conversation.id === conversationId
-          ? {
-              ...conversation,
-              updatedAt: chatMessage.createdAt,
-              messages: [...conversation.messages, chatMessage],
-            }
-          : conversation,
-      ),
+  const totalUserMessages = useMemo(() => {
+    return conversations.reduce(
+      (acc, c) => acc + c.messages.filter((m) => m.role === 'user').length,
+      0,
     );
-  }, []);
+  }, [conversations]);
+
+  const checkUsageLimits = useCallback(
+    (newCount: number) => {
+      if (!isLoggedIn && newCount >= 10) {
+        setLoginModalVisible(true);
+      } else if (isLoggedIn && !isPro && newCount >= 20) {
+        setPaywallModalVisible(true);
+      }
+    },
+    [isLoggedIn, isPro],
+  );
+
+  const appendMessage = useCallback(
+    (conversationId: string, chatMessage: ChatMessage) => {
+      setConversations((current) =>
+        current.map((conversation) =>
+          conversation.id === conversationId
+            ? {
+                ...conversation,
+                updatedAt: chatMessage.createdAt,
+                messages: [...conversation.messages, chatMessage],
+              }
+            : conversation,
+        ),
+      );
+    },
+    [],
+  );
 
   const scheduleReply = useCallback(
     (conversationId: string) => {
@@ -116,6 +148,14 @@ export function ConversationsProvider({ children }: PropsWithChildren) {
 
   const startConversation = useCallback(
     (firstMessage: string, topicId?: string) => {
+      if (!isLoggedIn && totalUserMessages >= 10) {
+        setLoginModalVisible(true);
+        return '';
+      }
+      if (isLoggedIn && !isPro && totalUserMessages >= 20) {
+        setPaywallModalVisible(true);
+        return '';
+      }
       const now = Date.now();
       const id = makeId('c');
       const conversation: Conversation = {
@@ -128,13 +168,22 @@ export function ConversationsProvider({ children }: PropsWithChildren) {
       };
       setConversations((current) => [conversation, ...current]);
       scheduleReply(id);
+      checkUsageLimits(totalUserMessages + 1);
       return id;
     },
-    [scheduleReply],
+    [scheduleReply, totalUserMessages, isLoggedIn, isPro, checkUsageLimits],
   );
 
   const sendMessage = useCallback(
     (conversationId: string, text: string) => {
+      if (!isLoggedIn && totalUserMessages >= 10) {
+        setLoginModalVisible(true);
+        return;
+      }
+      if (isLoggedIn && !isPro && totalUserMessages >= 20) {
+        setPaywallModalVisible(true);
+        return;
+      }
       appendMessage(conversationId, {
         id: makeId('m'),
         role: 'user',
@@ -142,9 +191,14 @@ export function ConversationsProvider({ children }: PropsWithChildren) {
         createdAt: Date.now(),
       });
       scheduleReply(conversationId);
+      checkUsageLimits(totalUserMessages + 1);
     },
-    [appendMessage, scheduleReply],
+    [appendMessage, scheduleReply, totalUserMessages, isLoggedIn, isPro, checkUsageLimits],
   );
+
+  const deleteConversation = useCallback((id: string) => {
+    setConversations((current) => current.filter((c) => c.id !== id));
+  }, []);
 
   const clearAll = useCallback(() => {
     if (replyTimer.current) clearTimeout(replyTimer.current);
@@ -159,10 +213,32 @@ export function ConversationsProvider({ children }: PropsWithChildren) {
       getConversation: (id) => conversations.find((conversation) => conversation.id === id),
       startConversation,
       sendMessage,
+      deleteConversation,
       typingIn,
       clearAll,
+      totalUserMessages,
+      isLoggedIn,
+      setIsLoggedIn,
+      isPro,
+      setIsPro,
+      loginModalVisible,
+      setLoginModalVisible,
+      paywallModalVisible,
+      setPaywallModalVisible,
     };
-  }, [conversations, startConversation, sendMessage, typingIn, clearAll]);
+  }, [
+    conversations,
+    startConversation,
+    sendMessage,
+    deleteConversation,
+    typingIn,
+    clearAll,
+    totalUserMessages,
+    isLoggedIn,
+    isPro,
+    loginModalVisible,
+    paywallModalVisible,
+  ]);
 
   return <ConversationsContext.Provider value={value}>{children}</ConversationsContext.Provider>;
 }

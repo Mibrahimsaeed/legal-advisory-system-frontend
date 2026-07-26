@@ -1,20 +1,20 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import AppLogo from '@/components/app-logo';
 import { ChatInput } from '@/components/chat/chat-input';
 import { MessageBubble } from '@/components/chat/message-bubble';
 import { SuggestionCard } from '@/components/chat/suggestion-card';
 import { LoginPromptModal } from '@/components/modals/login-prompt-modal';
 import { PaywallModal } from '@/components/modals/paywall-modal';
 import { SidebarDrawer } from '@/components/navigation/sidebar-drawer';
+import { TAB_BAR_CONTENT_HEIGHT } from '@/components/navigation/tab-bar';
 import { ThemedText } from '@/components/themed-text';
-import { EmptyState } from '@/components/ui/empty-state';
 import { Icon } from '@/components/ui/icon';
 import { PressableScale } from '@/components/ui/pressable-scale';
-import { ScreenHeader } from '@/components/ui/screen-header';
 import { ThemedStatusBar } from '@/components/ui/themed-status-bar';
 import { TypingDots } from '@/components/ui/typing-dots';
 import { Durations, Easings, staggerDelay } from '@/constants/motion';
@@ -52,14 +52,27 @@ function TypingIndicator() {
   );
 }
 
-export default function ChatScreen() {
-  const router = useRouter();
+export default function MainChatTab() {
   const theme = useTheme();
-  const params = useLocalSearchParams<{ id: string; topic?: string }>();
-  const isNew = params.id === 'new';
+  const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ id?: string; topic?: string }>();
 
-  const { getConversation, startConversation, sendMessage, typingIn } = useConversations();
-  const [conversationId, setConversationId] = useState<string | null>(isNew ? null : params.id);
+  const {
+    conversations,
+    getConversation,
+    startConversation,
+    sendMessage,
+    typingIn,
+    totalUserMessages,
+    isLoggedIn,
+    isPro,
+    setLoginModalVisible,
+    setPaywallModalVisible,
+  } = useConversations();
+
+  // Active conversation state: default to most recent or start fresh
+  const activeId = params.id ?? (conversations.length > 0 ? conversations[0].id : null);
+  const [conversationId, setConversationId] = useState<string | null>(activeId);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const conversation = conversationId ? getConversation(conversationId) : undefined;
@@ -67,7 +80,6 @@ export default function ChatScreen() {
   const messages = conversation?.messages ?? [];
   const isTyping = conversationId !== null && typingIn === conversationId;
 
-  // Only animate messages that arrive after mount — history should not replay.
   const mountTime = useRef(Date.now());
   const listRef = useRef<FlatList<ChatMessage>>(null);
 
@@ -83,25 +95,14 @@ export default function ChatScreen() {
     if (conversationId) {
       sendMessage(conversationId, text);
     } else {
-      setConversationId(startConversation(text, topic?.id));
+      const newId = startConversation(text, topic?.id);
+      setConversationId(newId);
     }
   };
 
-  if (!isNew && !conversation) {
-    return (
-      <SafeAreaView style={[styles.screen, { backgroundColor: theme.background }]} edges={['top']}>
-        <ThemedStatusBar />
-        <ScreenHeader title="Conversation" />
-        <EmptyState
-          icon="chat"
-          title="Conversation not found"
-          message="It may have been cleared. Start a new question any time."
-          action={{ label: 'Ask a new question', onPress: () => router.replace({ pathname: '/chat/[id]', params: { id: 'new' } }) }}
-          style={styles.notFound}
-        />
-      </SafeAreaView>
-    );
-  }
+  const handleNewQuestion = () => {
+    setConversationId(null);
+  };
 
   const suggestions = topic
     ? [topic.sampleQuestion, 'What documents should I gather first?', 'When do I actually need a lawyer?']
@@ -118,20 +119,61 @@ export default function ChatScreen() {
       <LoginPromptModal />
       <PaywallModal />
 
-      <ScreenHeader
-        title={conversation?.title ?? (topic ? `${topic.title} question` : 'New question')}
-        subtitle="AI Legal Assistant"
-        right={
+      {/* Top Header */}
+      <View style={[styles.header, { borderBottomColor: theme.border }]}>
+        <PressableScale
+          onPress={() => setSidebarOpen(true)}
+          haptic="selection"
+          accessibilityLabel="Open sidebar history"
+          style={[styles.headerButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
+        >
+          <Icon name="history" size={18} color={theme.text} />
+        </PressableScale>
+
+        <View style={styles.brandTitleRow}>
+          <AppLogo size={28} showText={false} />
+          <ThemedText style={[styles.headerTitle, { color: theme.text }]} numberOfLines={1}>
+            {conversation?.title ?? 'LexAura AI'}
+          </ThemedText>
+        </View>
+
+        <View style={styles.headerRightRow}>
+          {!isLoggedIn ? (
+            <PressableScale
+              onPress={() => setLoginModalVisible(true)}
+              haptic="selection"
+              style={[styles.usageBadge, { backgroundColor: theme.accentSoft, borderColor: theme.gold }]}
+            >
+              <ThemedText style={[styles.usageBadgeText, { color: theme.gold }]}>
+                {totalUserMessages}/10
+              </ThemedText>
+            </PressableScale>
+          ) : !isPro ? (
+            <PressableScale
+              onPress={() => setPaywallModalVisible(true)}
+              haptic="selection"
+              style={[styles.usageBadge, { backgroundColor: theme.accentSoft, borderColor: theme.gold }]}
+            >
+              <ThemedText style={[styles.usageBadgeText, { color: theme.gold }]}>
+                {totalUserMessages}/20
+              </ThemedText>
+            </PressableScale>
+          ) : (
+            <View style={[styles.usageBadge, { backgroundColor: theme.gold }]}>
+              <ThemedText style={[styles.usageBadgeText, { color: theme.onPrimary }]}>PRO ⭐</ThemedText>
+            </View>
+          )}
+
           <PressableScale
-            onPress={() => setSidebarOpen(true)}
-            haptic="selection"
-            accessibilityLabel="Open conversation history drawer"
-            style={[styles.historyHeaderBtn, { backgroundColor: theme.surfaceMuted }]}
+            onPress={handleNewQuestion}
+            haptic="light"
+            accessibilityLabel="New question"
+            style={[styles.headerButton, { backgroundColor: theme.gold }]}
           >
-            <Icon name="history" size={18} color={theme.text} />
+            <Icon name="plus" size={16} color={theme.onPrimary} weight="semibold" />
           </PressableScale>
-        }
-      />
+        </View>
+      </View>
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -147,7 +189,7 @@ export default function ChatScreen() {
                 <Icon name="sparkles" size={IconSize.xl} color={theme.accentText} />
               </View>
               <ThemedText type="heading" style={styles.emptyTitle}>
-                {topic ? `Let’s talk ${topic.title.toLowerCase()}` : 'What can we look into?'}
+                {topic ? `Let’s talk ${topic.title.toLowerCase()}` : 'What legal question can I answer today?'}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary" style={styles.emptySubtitle}>
                 Describe your situation in plain words — no legal jargon needed.
@@ -189,7 +231,10 @@ export default function ChatScreen() {
                 </ThemedText>
               </Animated.View>
             }
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[
+              styles.listContent,
+              { paddingBottom: Spacing.md },
+            ]}
             showsVerticalScrollIndicator={false}
             keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
             keyboardShouldPersistTaps="handled"
@@ -209,12 +254,50 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
   },
-  historyHeaderBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: Radius.full,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Layout.screenPadding,
+    paddingVertical: Spacing.xs + 4,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: Spacing.sm,
+  },
+  brandTitleRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginHorizontal: 4,
+  },
+  headerTitle: {
+    fontFamily: 'Georgia',
+    fontSize: 16,
+    fontWeight: '500',
+    flex: 1,
+  },
+  headerRightRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs + 2,
+  },
+  headerButton: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.md,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  usageBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+  },
+  usageBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   listContent: {
     paddingHorizontal: Layout.screenPadding,
@@ -254,9 +337,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs + 2,
     marginBottom: Spacing.md,
   },
-  notFound: {
-    marginTop: Spacing.xxxl,
-  },
   emptyWrapper: {
     flex: 1,
     paddingHorizontal: Layout.screenPadding,
@@ -269,8 +349,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyIconCircle: {
-    width: 68,
-    height: 68,
+    width: 64,
+    height: 64,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -282,10 +362,10 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     textAlign: 'center',
     marginTop: Spacing.sm,
-    maxWidth: 280,
+    maxWidth: 290,
   },
   suggestions: {
-    marginTop: Spacing.xxl,
+    marginTop: Spacing.xl,
     gap: Spacing.sm + 2,
   },
   suggestionsLabel: {

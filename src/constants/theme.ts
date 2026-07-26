@@ -44,96 +44,110 @@ const brandTokens = {
 
 const light = {
   // Surfaces
-  background: '#FFFFFF',
-  surface: '#F5F4EF',
-  surfaceMuted: '#EDEBE4',
+  background: '#F8F6F2',
+  surface: '#FFFFFF',
+  card: '#FCFBF9',
+  surfaceMuted: '#F4F2EC',
   surfaceElevated: '#FFFFFF',
-  border: '#E7E5DD',
-  borderStrong: '#D6D3C9',
-  overlay: 'rgba(20, 20, 20, 0.45)',
+  border: '#E8E3DB',
+  borderStrong: '#D9D3C8',
+  overlay: 'rgba(24, 24, 24, 0.45)',
 
   // Text
-  text: Brand.ink,
-  textSecondary: '#5B5A54',
-  textMuted: '#9C9A92',
+  text: '#181818',
+  textSecondary: '#6E6B66',
+  textMuted: '#99958F',
+
+  // Gold
+  gold: '#C89B52',
+  goldBright: '#E5D1A8',
+  goldHover: '#B7863E',
+  lightGold: '#E5D1A8',
 
   // Actions
-  primary: Brand.ink,
-  primaryPressed: '#000000',
+  primary: '#C89B52',
+  primaryPressed: '#B7863E',
   onPrimary: '#FFFFFF',
-  accent: Brand.ink,
-  accentStrong: Brand.ink,
-  accentText: Brand.ink,
-  accentSoft: '#EFEEE8',
-  link: Brand.ink,
+  accent: '#C89B52',
+  accentStrong: '#B7863E',
+  accentText: '#181818',
+  accentSoft: '#E5D1A8',
+  link: '#C89B52',
 
   // Feedback
   success: '#2E9E5B',
   successSoft: '#E7F6EC',
-  warning: Brand.amber,
+  warning: '#C89B52',
   warningSoft: '#FBF1DE',
   danger: Brand.danger,
   dangerSoft: '#FBE3DE',
 
   // Controls
   inputBackground: '#FFFFFF',
-  inputBorder: '#DEDBD1',
-  placeholder: '#B2AFA5',
-  icon: Brand.ink,
-  iconMuted: '#9C9A92',
+  inputBorder: '#E8E3DB',
+  placeholder: '#A3A099',
+  icon: '#181818',
+  iconMuted: '#6E6B66',
 
   // Chat
-  bubbleUser: '#F0EFE9',
-  bubbleUserText: Brand.ink,
-  bubbleAssistant: '#F5F4EF',
+  bubbleUser: '#E5D1A8',
+  bubbleUserText: '#181818',
+  bubbleAssistant: '#FCFBF9',
 
   ...brandTokens,
 } as const;
 
 const dark: Record<keyof typeof light, string> = {
   // Surfaces
-  background: '#121212',
-  surface: '#1C1C1C',
-  surfaceMuted: '#242424',
-  surfaceElevated: '#242424',
-  border: 'rgba(255, 255, 255, 0.10)',
-  borderStrong: 'rgba(255, 255, 255, 0.18)',
-  overlay: 'rgba(0, 0, 0, 0.6)',
+  background: '#0E1116',
+  surface: '#161B22',
+  card: '#1C222C',
+  surfaceMuted: '#161B22',
+  surfaceElevated: '#1C222C',
+  border: '#2A313D',
+  borderStrong: '#3B4454',
+  overlay: 'rgba(0, 0, 0, 0.65)',
 
   // Text
-  text: '#F5F4EF',
-  textSecondary: '#B7B5AB',
-  textMuted: '#7A7972',
+  text: '#F5F3EE',
+  textSecondary: '#B6B9BF',
+  textMuted: '#7F848E',
+
+  // Gold
+  gold: '#D4A85E',
+  goldBright: '#E6BE79',
+  goldHover: '#E6BE79',
+  lightGold: '#2D271E',
 
   // Actions
-  primary: '#FFFFFF',
-  primaryPressed: '#E7E5DD',
-  onPrimary: Brand.ink,
-  accent: '#FFFFFF',
-  accentStrong: '#FFFFFF',
-  accentText: '#FFFFFF',
-  accentSoft: 'rgba(255, 255, 255, 0.08)',
-  link: '#FFFFFF',
+  primary: '#D4A85E',
+  primaryPressed: '#E6BE79',
+  onPrimary: '#0E1116',
+  accent: '#D4A85E',
+  accentStrong: '#E6BE79',
+  accentText: '#F5F3EE',
+  accentSoft: 'rgba(212, 168, 94, 0.15)',
+  link: '#E6BE79',
 
   // Feedback
   success: '#57C883',
   successSoft: 'rgba(87, 200, 131, 0.12)',
-  warning: Brand.amber,
-  warningSoft: 'rgba(231, 169, 59, 0.12)',
+  warning: '#D4A85E',
+  warningSoft: 'rgba(212, 168, 94, 0.15)',
   danger: '#F1735C',
   dangerSoft: 'rgba(241, 115, 92, 0.12)',
 
   // Controls
-  inputBackground: '#1C1C1C',
-  inputBorder: 'rgba(255, 255, 255, 0.16)',
-  placeholder: '#5E5D56',
-  icon: '#FFFFFF',
-  iconMuted: '#7A7972',
+  inputBackground: '#161B22',
+  inputBorder: '#2A313D',
+  placeholder: '#5E6573',
+  icon: '#F5F3EE',
+  iconMuted: '#B6B9BF',
 
   // Chat
-  bubbleUser: '#242424',
-  bubbleUserText: '#FFFFFF',
-  bubbleAssistant: '#1C1C1C',
+  bubbleUser: '#1C222C',
+  bubbleUserText: '#F5F3EE',
+  bubbleAssistant: '#161B22',
 
   ...brandTokens,
 };

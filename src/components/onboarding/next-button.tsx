@@ -1,83 +1,27 @@
-import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, {
-  useAnimatedProps,
-  useSharedValue,
-  withSpring,
-  ZoomIn,
-} from 'react-native-reanimated';
-import Svg, { Circle } from 'react-native-svg';
 
 import { Icon } from '@/components/ui/icon';
 import { PressableScale } from '@/components/ui/pressable-scale';
-import { Springs } from '@/constants/motion';
-import { Brand, Radius, Shadows } from '@/constants/theme';
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
-const OUTER = 72;
-const RING_RADIUS = 33;
-const RING_STROKE = 2.5;
-const CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+import { Radius, Shadows } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 type NextButtonProps = {
-  /** Zero-based current page. */
-  page: number;
-  total: number;
   onPress: () => void;
 };
 
-/**
- * Black circular advance button wrapped in a progress ring that fills as
- * onboarding progresses; the arrow becomes a checkmark on the last page.
- */
-export default function NextButton({ page, total, onPress }: NextButtonProps) {
-  const progress = useSharedValue((page + 1) / total);
-  const isLast = page >= total - 1;
-
-  useEffect(() => {
-    progress.value = withSpring((page + 1) / total, Springs.gentle);
-  }, [page, total, progress]);
-
-  const ringProps = useAnimatedProps(() => ({
-    strokeDashoffset: CIRCUMFERENCE * (1 - progress.value),
-  }));
+export default function NextButton({ onPress }: NextButtonProps) {
+  const theme = useTheme();
 
   return (
     <PressableScale
       onPress={onPress}
       haptic="medium"
       scaleTo={0.93}
-      accessibilityLabel={isLast ? 'Get started' : 'Next'}
+      accessibilityLabel="Next"
       style={styles.container}
     >
-      <Svg width={OUTER} height={OUTER} style={styles.ring}>
-        <Circle
-          cx={OUTER / 2}
-          cy={OUTER / 2}
-          r={RING_RADIUS}
-          stroke="rgba(20, 20, 20, 0.12)"
-          strokeWidth={RING_STROKE}
-          fill="none"
-        />
-        <AnimatedCircle
-          cx={OUTER / 2}
-          cy={OUTER / 2}
-          r={RING_RADIUS}
-          stroke={Brand.ink}
-          strokeWidth={RING_STROKE}
-          strokeLinecap="round"
-          strokeDasharray={`${CIRCUMFERENCE}`}
-          animatedProps={ringProps}
-          fill="none"
-          transform={`rotate(-90 ${OUTER / 2} ${OUTER / 2})`}
-        />
-      </Svg>
-
-      <View style={styles.core}>
-        <Animated.View key={isLast ? 'check' : 'arrow'} entering={ZoomIn.duration(200)}>
-          <Icon name={isLast ? 'check' : 'forward'} size={24} color={Brand.white} weight="semibold" />
-        </Animated.View>
+      <View style={[styles.core, { backgroundColor: theme.gold }, Shadows.card]}>
+        <Icon name="forward" size={22} color={theme.onPrimary} weight="semibold" />
       </View>
     </PressableScale>
   );
@@ -85,21 +29,14 @@ export default function NextButton({ page, total, onPress }: NextButtonProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: OUTER,
-    height: OUTER,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  ring: {
-    position: 'absolute',
   },
   core: {
-    width: 56,
-    height: 56,
+    width: 48,
+    height: 48,
     borderRadius: Radius.full,
-    backgroundColor: Brand.ink,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadows.raised,
   },
 });

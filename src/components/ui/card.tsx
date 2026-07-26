@@ -21,7 +21,7 @@ export function Card({ children, onPress, style, unpadded = false, accessibility
   const theme = useTheme();
   const surfaceStyle = [
     styles.base,
-    { backgroundColor: theme.surface, borderColor: theme.border },
+    { backgroundColor: theme.card, borderColor: theme.border },
     Shadows.card,
     !unpadded && styles.padded,
     style,
